@@ -47,10 +47,10 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         setErrorMessage("A senha deve ter pelo menos 6 caracteres.");
       } else if (error.code === "auth/email-already-in-use") {
         setErrorMessage("Este e-mail já está cadastrado. Alterne para Entrar.");
-      } else if (error.code === "auth/operation-not-allowed") {
-        setErrorMessage("Provedor de E-mail/Senha precisa ser ativado no console do Firebase.");
+      } else if (error.code === "auth/operation-not-allowed" || error.code === "auth/configuration-not-found") {
+        setErrorMessage("O recurso de Autenticação (E-mail/Senha) precisa ser ativado no Firebase Console.");
       } else {
-        setErrorMessage("Erro ao autenticar. Verifique seus dados.");
+        setErrorMessage(error.message || "Erro ao autenticar. Verifique seus dados.");
       }
     }
   };
