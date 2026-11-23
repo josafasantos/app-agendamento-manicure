@@ -21,7 +21,8 @@ import {
   TrendingDown,
   TrendingUp,
   ChevronRight,
-  Edit2
+  Edit2,
+  UserPlus
 } from "lucide-react";
 import { formatCurrency, formatPhone } from "./lib/utils";
 import type { Service, Appointment, ClientProfile, StudioSettings, Transaction } from "./types";
@@ -33,6 +34,7 @@ import { ExpenseModal } from "./components/ExpenseModal";
 import { ClientDetailModal } from "./components/ClientDetailModal";
 import { ServiceModal } from "./components/ServiceModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { AddStaffModal } from "./components/AddStaffModal";
 import { auth } from "./lib/firebase";
 import { onAuthStateChanged, signOut, type User as FirebaseUser } from "firebase/auth";
 import {
@@ -69,6 +71,7 @@ export default function App() {
   const [activeServiceForEdit, setActiveServiceForEdit] = useState<Service | null>(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
 
   // Filtro de Data no Painel da Manicure
   const todayStr = new Date().toISOString().split("T")[0];
@@ -1160,6 +1163,27 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Gestão de Equipe & Acessos Restritos */}
+                <div className="bg-white rounded-2xl p-5 border border-rose-100 shadow-xs space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                        <Users className="w-4 h-4 text-rose-500" />
+                        Acessos da Manicure & Equipe
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Novos acessos ao painel são cadastrados exclusivamente por você aqui dentro
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setIsAddStaffModalOpen(true)}
+                      className="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm shadow-rose-200 transition-all self-start sm:self-auto cursor-pointer"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" /> Adicionar Profissional
+                    </button>
+                  </div>
+                </div>
+
                 {/* Catálogo de Serviços */}
                 <div className="bg-white rounded-2xl p-5 border border-rose-100 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
@@ -1272,6 +1296,12 @@ export default function App() {
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         onSuccess={() => setIsSettingsModalOpen(false)}
+      />
+
+      {/* Modal de Novo Acesso de Equipe */}
+      <AddStaffModal
+        isOpen={isAddStaffModalOpen}
+        onClose={() => setIsAddStaffModalOpen(false)}
       />
 
       {/* Modal de Login Protegido */}
