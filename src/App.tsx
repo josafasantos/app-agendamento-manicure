@@ -820,6 +820,11 @@ export default function App() {
                                 ? "Cancelado"
                                 : "Confirmado"}
                             </span>
+                            {app.reminderSent && (
+                              <span className="block text-[10px] text-emerald-600 font-medium mt-0.5" title="Lembrete automático enviado para o WhatsApp">
+                                ✓ Lembrete enviado
+                              </span>
+                            )}
                           </div>
 
                           <div className="flex items-center gap-1.5 ml-auto sm:ml-0 flex-wrap justify-end">

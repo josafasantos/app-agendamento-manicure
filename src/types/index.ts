@@ -31,6 +31,8 @@ export interface Appointment {
   notes?: string;
   paymentMethod?: "pix" | "cartao" | "dinheiro";
   createdAt: string;
+  reminderSent?: boolean;
+  reminderSentAt?: string;
 }
 
 export interface ClientProfile {
