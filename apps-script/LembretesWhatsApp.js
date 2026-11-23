@@ -28,8 +28,8 @@ const CONFIG = {
   
   // Configurações da Meta WhatsApp Cloud API
   // (Obtidas gratuitamente em developers.facebook.com > WhatsApp > API Setup)
-  META_PHONE_NUMBER_ID: "SEU_PHONE_NUMBER_ID_DA_META",
-  META_ACCESS_TOKEN: "SEU_ACCESS_TOKEN_PERMANENTE_DA_META",
+  META_PHONE_NUMBER_ID: "1489500727573945",
+  META_ACCESS_TOKEN: "EAAQFP4YDatEBTEvM93rrpoIgI5dafYROXl5girfk5c7GKCpSKyclvyeW71cMvcZCca1JNkLaaIC5ZAHoLDLNrs5hanRvicWOThZBDQpQRoSccrs9DIMING99CTiMAcSZAAqh2rzvm2rohNGNA400wrp9wdU1OF8hD40YZAQgpHGsAbCEkVfQmR3XZBrq0I0oqxoYJhZBmaLUxltGBhhPS6ZCPkzTwJ169xZAUJ6SbjYkuZAfvEz0gpkisUTLucgNYZBI2Kc91IN3wc45cP1uUyYVcpsMKmZAMZAkZD",
   
   // Fuso horário
   TIMEZONE: "America/Sao_Paulo"
@@ -255,7 +255,7 @@ function marcarLembreteEnviadoNoFirestore(docFullName) {
  * para testar o envio com o seu próprio WhatsApp!
  */
 function testarEnvioManual() {
-  const seuTelefoneComDDD = "11999999999"; // Digite o seu número aqui para testar
+  const seuTelefoneComDDD = "11982187682"; // Telefone de teste do usuário
   const mensagemTeste = 
     `💅 *[TESTE] Espaço Val Brombini*\n` +
     `Este é um disparo de teste da automação gratuita do Google Apps Script com WhatsApp!\n` +
