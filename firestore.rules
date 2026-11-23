@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regras para serviços (Público pode ler, manicure autenticada pode editar)
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Regras para configurações do estúdio (Público pode ler horário e endereço)
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Regras para agendamentos
+    match /appointments/{appointmentId} {
+      // Público pode criar novo agendamento se o documento não existir
+      allow create: if !resource.exists()
+                    && request.resource.data.clientName is string
+                    && request.resource.data.clientPhone is string
+                    && request.resource.data.startTime is string;
+      
+      // Leitura e atualização de status permitida apenas para a profissional autenticada
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // Ficha de clientes e financeiro (Acesso exclusivo da manicure autenticada)
+    match /clients/{clientId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /transactions/{transactionId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
