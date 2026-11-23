@@ -17,7 +17,7 @@ service cloud.firestore {
     // Regras para agendamentos
     match /appointments/{appointmentId} {
       // Público pode criar novo agendamento se o documento não existir
-      allow create: if !resource.exists()
+      allow create: if resource == null
                     && request.resource.data.clientName is string
                     && request.resource.data.clientPhone is string
                     && request.resource.data.startTime is string;
