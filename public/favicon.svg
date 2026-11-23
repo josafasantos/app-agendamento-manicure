@@ -1,5 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M12 2a5 5 0 0 0-5 5v7a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5Z"/>
-  <path d="M12 14v8"/>
-  <path d="M8 18h8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#881337" />
+      <stop offset="45%" stop-color="#e11d48" />
+      <stop offset="100%" stop-color="#fb7185" />
+    </linearGradient>
+    <linearGradient id="nailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#fff1f2" />
+      <stop offset="100%" stop-color="#fecdd3" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4c0519" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Fundo Squircle Elegante -->
+  <rect x="24" y="24" width="464" height="464" rx="124" fill="url(#bgGrad)" filter="url(#shadow)" />
+
+  <!-- Borda Interna Suave -->
+  <rect x="36" y="36" width="440" height="440" rx="112" stroke="#ffffff" stroke-opacity="0.18" stroke-width="3" fill="none" />
+
+  <!-- Silhueta Esculpida da Unha (Formato Amendoador / Stiletto Clássico) -->
+  <path d="M256 85 C295 135, 335 210, 335 285 C335 348, 302 380, 256 380 C210 380, 177 348, 177 285 C177 210, 217 135, 256 85 Z" fill="url(#nailGrad)" />
+
+  <!-- Ponta Francesa Esculpida com Brilho Puro -->
+  <path d="M256 85 C276 120, 305 175, 312 215 C290 230, 222 230, 200 215 C207 175, 236 120, 256 85 Z" fill="#ffffff" fill-opacity="0.9" />
+
+  <!-- Reflexo de Verniz / Top Coat Glass -->
+  <path d="M225 160 C217 205, 214 250, 216 295 C210 285, 208 250, 211 210 C214 180, 220 160, 225 160 Z" fill="#ffffff" fill-opacity="0.6" />
+
+  <!-- Estrela de Brilho Dourado / Glamour (Canto Superior Direito) -->
+  <path d="M375 115 Q375 145 405 145 Q375 145 375 175 Q375 145 345 145 Q375 145 375 115 Z" fill="url(#goldGrad)" />
+  <circle cx="375" cy="145" r="4.5" fill="#ffffff" />
+
+  <!-- Estrela de Brilho Suave (Canto Inferior Esquerdo) -->
+  <path d="M145 305 Q145 324 164 324 Q145 324 145 343 Q145 324 126 324 Q145 324 145 305 Z" fill="#ffffff" fill-opacity="0.85" />
+
+  <!-- Detalhes de Cristais / Glitter -->
+  <circle cx="160" cy="165" r="6" fill="url(#goldGrad)" />
+  <circle cx="355" cy="335" r="5" fill="#ffffff" fill-opacity="0.8" />
+  <circle cx="370" cy="240" r="3.5" fill="url(#goldGrad)" />
+
+  <!-- Monograma Sofisticado: VAL BROMBINI -->
+  <text x="256" y="428" text-anchor="middle" font-family="'Playfair Display', 'Cinzel', 'Georgia', 'Segoe UI', serif" font-size="28" font-weight="700" letter-spacing="6" fill="#ffffff" fill-opacity="0.95">VAL BROMBINI</text>
+  <text x="256" y="446" text-anchor="middle" font-family="'Segoe UI', -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4" fill="#fecdd3" fill-opacity="0.85">NAIL DESIGNER</text>
 </svg>

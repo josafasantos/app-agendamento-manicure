@@ -337,10 +337,12 @@ export default function App() {
       {/* ============================================================ */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-rose-100 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-rose-200 shadow-md">
-              <Sparkles className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/favicon.svg"
+              alt={settings.studioName}
+              className="w-10 h-10 rounded-2xl shadow-rose-200 shadow-md object-contain shrink-0"
+            />
             <div>
               <h1 className="font-bold text-lg text-slate-900 leading-tight">{settings.studioName}</h1>
               <p className="text-xs text-rose-600 font-medium">Por {settings.ownerName}</p>
