@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatPhone } from "./lib/utils";
 import type { Service, Appointment, ClientProfile } from "./types";
+import { InstallPrompt } from "./components/InstallPrompt";
 
 // Dados iniciais de demonstração (serão sincronizados com o Firestore)
 const INITIAL_SERVICES: Service[] = [
@@ -191,27 +192,30 @@ export default function App() {
             </div>
           </div>
 
-          {/* Seletor de Modo (Cliente vs Manicure) */}
-          <div className="flex bg-rose-100/60 p-1 rounded-full text-xs font-semibold">
-            <button
-              onClick={() => {
-                setViewMode("client");
-                setBookingConfirmed(false);
-              }}
-              className={`px-3 py-1.5 rounded-full transition-all ${
-                viewMode === "client" ? "bg-white text-rose-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Visão Cliente
-            </button>
-            <button
-              onClick={() => setViewMode("admin")}
-              className={`px-3 py-1.5 rounded-full transition-all ${
-                viewMode === "admin" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Painel Manicure
-            </button>
+          {/* Botão de Instalar PWA & Seletor de Modo */}
+          <div className="flex items-center gap-2">
+            <InstallPrompt />
+            <div className="flex bg-rose-100/60 p-1 rounded-full text-xs font-semibold">
+              <button
+                onClick={() => {
+                  setViewMode("client");
+                  setBookingConfirmed(false);
+                }}
+                className={`px-3 py-1.5 rounded-full transition-all ${
+                  viewMode === "client" ? "bg-white text-rose-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Visão Cliente
+              </button>
+              <button
+                onClick={() => setViewMode("admin")}
+                className={`px-3 py-1.5 rounded-full transition-all ${
+                  viewMode === "admin" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Painel Manicure
+              </button>
+            </div>
           </div>
         </div>
       </header>
