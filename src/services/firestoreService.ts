@@ -20,7 +20,7 @@ import type {
 } from "../types";
 
 export const DEFAULT_SETTINGS: StudioSettings = {
-  ownerName: "Val Brombini",
+  ownerName: "Valquiria Brombini",
   studioName: "Espaço Val Brombini",
   phone: "11999999999",
   address: "Rua das Flores, 123 - Centro",
