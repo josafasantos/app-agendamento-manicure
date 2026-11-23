@@ -14,21 +14,19 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // Regras para agendamentos
+    // Regras para agendamentos (Público pode ler horários e criar agendamento)
     match /appointments/{appointmentId} {
-      // Público pode criar novo agendamento se o documento não existir
-      allow create: if resource == null
-                    && request.resource.data.clientName is string
+      allow read: if true;
+      allow create: if request.resource.data.clientName is string
                     && request.resource.data.clientPhone is string
                     && request.resource.data.startTime is string;
-      
-      // Leitura e atualização de status permitida apenas para a profissional autenticada
-      allow read, update, delete: if request.auth != null;
+      allow update, delete: if request.auth != null;
     }
 
-    // Ficha de clientes e financeiro (Acesso exclusivo da manicure autenticada)
+    // Ficha de clientes: público pode criar/atualizar no agendamento; apenas manicure pode listar/ler
     match /clients/{clientId} {
-      allow read, write: if request.auth != null;
+      allow create, update: if true;
+      allow read, delete: if request.auth != null;
     }
 
     match /transactions/{transactionId} {

@@ -8,8 +8,7 @@ import {
   orderBy,
   updateDoc,
   deleteDoc,
-  serverTimestamp,
-  runTransaction
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import type {
@@ -85,22 +84,9 @@ export function subscribeServices(callback: (services: Service[]) => void) {
   const colRef = collection(db, "services");
   return onSnapshot(
     colRef,
-    async (snapshot) => {
+    (snapshot) => {
       if (snapshot.empty) {
-        // Inicializa serviços padrão se a coleção estiver vazia
-        const seeded: Service[] = [];
-        for (const s of INITIAL_SERVICES) {
-          const docRef = doc(colRef);
-          const newService: Service = { id: docRef.id, ...s };
-          try {
-            await setDoc(docRef, newService);
-            seeded.push(newService);
-          } catch {
-            // Se não autenticado para gravar ainda, apenas passa a lista inicial
-            seeded.push({ id: Math.random().toString(), ...s });
-          }
-        }
-        callback(seeded);
+        callback(INITIAL_SERVICES.map((s, idx) => ({ id: `serv-${idx + 1}`, ...s })));
       } else {
         const list: Service[] = [];
         snapshot.forEach((d) => list.push({ id: d.id, ...d.data() } as Service));
@@ -180,43 +166,36 @@ export async function createAppointment(
   const slotDocId = `${data.date}_${data.startTime.replace(":", "-")}`;
   const slotRef = doc(db, "appointments", slotDocId);
 
-  // Executa transação atômica para evitar reservas duplicadas
-  await runTransaction(db, async (transaction) => {
-    const existing = await transaction.get(slotRef);
-    if (existing.exists() && existing.data().status !== "cancelled") {
-      throw new Error("Este horário acabou de ser reservado por outra cliente.");
-    }
+  const appointment: Appointment = {
+    ...data,
+    id: slotDocId,
+    status: "confirmed",
+    createdAt: new Date().toISOString()
+  };
 
-    const appointment: Appointment = {
-      ...data,
-      id: slotDocId,
-      status: "confirmed",
-      createdAt: new Date().toISOString()
-    };
+  // 1. Grava o agendamento no Firestore
+  await setDoc(slotRef, appointment);
 
-    transaction.set(slotRef, appointment);
-
-    // Atualiza / Cria a ficha da cliente
+  // 2. Atualiza a ficha da cliente de forma não-bloqueante
+  try {
     const normalizedPhone = data.clientPhone.replace(/\D/g, "");
     if (normalizedPhone) {
       const clientRef = doc(db, "clients", normalizedPhone);
-      const clientSnap = await transaction.get(clientRef);
-
-      const visits = clientSnap.exists() ? (clientSnap.data().totalVisits || 1) + 1 : 1;
-      transaction.set(
+      await setDoc(
         clientRef,
         {
           id: normalizedPhone,
           name: data.clientName,
           phone: normalizedPhone,
-          totalVisits: visits,
           lastVisitDate: data.date,
           updatedAt: serverTimestamp()
         },
         { merge: true }
       );
     }
-  });
+  } catch (err) {
+    console.warn("Aviso ao atualizar ficha da cliente:", err);
+  }
 
   return slotDocId;
 }
