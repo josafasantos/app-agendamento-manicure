@@ -25,6 +25,9 @@ import {
   UserPlus
 } from "lucide-react";
 import { formatCurrency, formatPhone } from "./lib/utils";
+import { calculateAvailableSlots } from "./lib/scheduling";
+import { calculateFinanceMetrics } from "./lib/finance";
+import { getMaintenanceAlertClients } from "./lib/maintenance";
 import type { Service, Appointment, ClientProfile, StudioSettings, Transaction } from "./types";
 import { InstallPrompt } from "./components/InstallPrompt";
 import { LoginModal } from "./components/LoginModal";
@@ -151,60 +154,12 @@ export default function App() {
 
   // 2. Geração Dinâmica de Horários Livres (sem conflito)
   const availableSlots = useMemo(() => {
-    if (!clientDate || totalDuration <= 0) return [];
-
-    const slots: string[] = [];
-    const [startH, startM] = (settings.dayStartTime || "08:00").split(":").map(Number);
-    const [endH, endM] = (settings.dayEndTime || "19:00").split(":").map(Number);
-    const dayStartMinutes = startH * 60 + startM;
-    const dayEndMinutes = endH * 60 + endM;
-
-    // Almoço
-    let lunchStartMin = -1;
-    let lunchEndMin = -1;
-    if (settings.lunchStart && settings.lunchEnd) {
-      const [lsH, lsM] = settings.lunchStart.split(":").map(Number);
-      const [leH, leM] = settings.lunchEnd.split(":").map(Number);
-      lunchStartMin = lsH * 60 + lsM;
-      lunchEndMin = leH * 60 + leM;
-    }
-
-    // Agendamentos ocupados no dia
-    const dayAppointments = appointments.filter(
-      (a) => a.date === clientDate && a.status !== "cancelled"
-    );
-
-    const stepMinutes = 30;
-    const totalSlotNeeded = totalDuration + (settings.bufferMinutes || 10);
-
-    for (let cur = dayStartMinutes; cur + totalDuration <= dayEndMinutes; cur += stepMinutes) {
-      const curEnd = cur + totalSlotNeeded;
-
-      // Verifica conflito com almoço
-      if (lunchStartMin > 0 && lunchEndMin > 0) {
-        if (!(curEnd <= lunchStartMin || cur >= lunchEndMin)) {
-          continue;
-        }
-      }
-
-      // Verifica colisão com agendamentos existentes
-      const hasConflict = dayAppointments.some((app) => {
-        const [appStartH, appStartM] = app.startTime.split(":").map(Number);
-        const [appEndH, appEndM] = app.endTime.split(":").map(Number);
-        const appStartMin = appStartH * 60 + appStartM;
-        const appEndMin = appEndH * 60 + appEndM;
-
-        return cur < appEndMin && curEnd > appStartMin;
-      });
-
-      if (!hasConflict) {
-        const hStr = String(Math.floor(cur / 60)).padStart(2, "0");
-        const mStr = String(cur % 60).padStart(2, "0");
-        slots.push(`${hStr}:${mStr}`);
-      }
-    }
-
-    return slots;
+    return calculateAvailableSlots({
+      clientDate,
+      totalDuration,
+      settings,
+      appointments
+    });
   }, [clientDate, totalDuration, settings, appointments]);
 
   // Define horário padrão se o atual não estiver mais disponível
@@ -283,51 +238,12 @@ export default function App() {
 
   // Cálculos Financeiros
   const financeMetrics = useMemo(() => {
-    const todayTrans = transactions.filter((t) => t.date === todayStr);
-    const todayIncome = todayTrans
-      .filter((t) => t.type === "income")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const monthIncome = transactions
-      .filter((t) => t.type === "income")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const monthExpense = transactions
-      .filter((t) => t.type === "expense")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const pixTotal = transactions
-      .filter((t) => t.paymentMethod === "pix" && t.type === "income")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const cardTotal = transactions
-      .filter((t) => t.paymentMethod === "cartao" && t.type === "income")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const cashTotal = transactions
-      .filter((t) => t.paymentMethod === "dinheiro" && t.type === "income")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    return {
-      todayIncome,
-      monthIncome,
-      monthExpense,
-      netProfit: monthIncome - monthExpense,
-      pixTotal,
-      cardTotal,
-      cashTotal
-    };
+    return calculateFinanceMetrics(transactions, todayStr);
   }, [transactions, todayStr]);
 
   // Clientes para Alerta de Retorno (15 a 21 dias)
   const maintenanceAlertClients = useMemo(() => {
-    const today = new Date();
-    return clients.filter((c) => {
-      if (!c.lastVisitDate) return false;
-      const last = new Date(c.lastVisitDate + "T12:00:00");
-      const diffDays = Math.floor((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
-      return diffDays >= (settings.maintenanceCycleDays - 5);
-    });
+    return getMaintenanceAlertClients(clients, settings.maintenanceCycleDays);
   }, [clients, settings.maintenanceCycleDays]);
 
   return (
