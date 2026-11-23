@@ -71,7 +71,7 @@ export function InstallPrompt() {
       <button
         onClick={handleInstallClick}
         className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-full shadow-sm transition-all active:scale-95 animate-pulse"
-        title="Instalar Studio Nails na tela inicial"
+        title="Instalar Espaço Val Brombini na tela inicial"
       >
         <Download className="w-3.5 h-3.5" />
         <span>Instalar App</span>
@@ -92,7 +92,7 @@ export function InstallPrompt() {
                 <div className="w-9 h-9 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
                   <Smartphone className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-base text-slate-900">Instalar o Studio Nails</h3>
+                <h3 className="font-bold text-base text-slate-900">Instalar Espaço Val Brombini</h3>
               </div>
               <button
                 onClick={() => setShowIOSModal(false)}

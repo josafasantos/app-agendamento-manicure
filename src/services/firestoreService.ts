@@ -20,8 +20,8 @@ import type {
 } from "../types";
 
 export const DEFAULT_SETTINGS: StudioSettings = {
-  ownerName: "Josafá Santos",
-  studioName: "Studio Nails",
+  ownerName: "Val Brombini",
+  studioName: "Espaço Val Brombini",
   phone: "11999999999",
   address: "Rua das Flores, 123 - Centro",
   workDays: [1, 2, 3, 4, 5, 6], // Segunda a Sábado

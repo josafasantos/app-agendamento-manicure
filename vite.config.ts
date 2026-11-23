@@ -18,9 +18,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'App Manicure & Nail Design',
-        short_name: 'Studio Nails',
-        description: 'Agendamento rápido e gestão para manicure e nail designer',
+        name: 'Espaço Val Brombini',
+        short_name: 'Val Brombini',
+        description: 'Agendamento rápido e gestão para manicure e nail designer - Espaço Val Brombini',
         theme_color: '#f43f5e',
         background_color: '#ffffff',
         display: 'standalone',
