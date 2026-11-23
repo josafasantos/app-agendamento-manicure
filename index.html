@@ -11,6 +11,14 @@
     <meta name="apple-mobile-web-app-title" content="Val Brombini" />
     <meta name="description" content="Agendamento rápido e gestão para manicure e nail designer - Espaço Val Brombini" />
     <title>Espaço Val Brombini - Agendamento & Gestão</title>
+    <script>
+      window.__pwaInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__pwaInstallPrompt = e;
+        window.dispatchEvent(new CustomEvent('pwa-prompt-ready'));
+      });
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-rose-500 selection:text-white">
     <div id="root"></div>

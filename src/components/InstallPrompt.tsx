@@ -6,17 +6,25 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+declare global {
+  interface Window {
+    __pwaInstallPrompt?: BeforeInstallPromptEvent | null;
+  }
+}
+
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
+    return typeof window !== "undefined" ? window.__pwaInstallPrompt || null : null;
+  });
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
 
   useEffect(() => {
-    // 1. Verifica se já está instalado e rodando em modo standalone
+    // 1. Verifica se já está rodando instalado como App independente
     const standaloneMode =
       window.matchMedia("(display-mode: standalone)").matches ||
-      // @ts-expect-error - navigator.standalone específico do Safari
+      // @ts-expect-error - Safari standalone
       window.navigator.standalone === true;
 
     if (standaloneMode) {
@@ -24,23 +32,46 @@ export function InstallPrompt() {
       return;
     }
 
-    // 2. Detecta se é iOS (iPhone, iPad)
+    // 2. Detecta se é dispositivo Apple (iPhone, iPad) onde prompt nativo não existe
     const ua = window.navigator.userAgent.toLowerCase();
     const isAppleDevice = /iphone|ipad|ipod/.test(ua);
     if (isAppleDevice) {
       setIsIOS(true);
     }
 
-    // 3. Captura o evento nativo de instalação do Chromium / Android
+    // 3. Captura prompt de instalação e atualiza se chegar
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      const promptEvent = e as BeforeInstallPromptEvent;
+      window.__pwaInstallPrompt = promptEvent;
+      setDeferredPrompt(promptEvent);
+    };
+
+    const handlePromptReady = () => {
+      if (window.__pwaInstallPrompt) {
+        setDeferredPrompt(window.__pwaInstallPrompt);
+      }
+    };
+
+    const handleAppInstalled = () => {
+      setIsStandalone(true);
+      setDeferredPrompt(null);
+      window.__pwaInstallPrompt = null;
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+    window.addEventListener("pwa-prompt-ready", handlePromptReady);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    // Se já havia sido capturado antes do React montar
+    if (window.__pwaInstallPrompt) {
+      setDeferredPrompt(window.__pwaInstallPrompt);
+    }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      window.removeEventListener("pwa-prompt-ready", handlePromptReady);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -48,37 +79,57 @@ export function InstallPrompt() {
   if (isStandalone) return null;
 
   const handleInstallClick = async () => {
+    // Apenas no iOS (onde o Safari não oferece API programática de instalação) abrimos as instruções
     if (isIOS) {
       setShowIOSModal(true);
       return;
     }
 
-    if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === "accepted") {
-        setDeferredPrompt(null);
+    // No Chrome / Android / Edge: SEMPRE tenta instalar diretamente pelo prompt nativo
+    const promptEvent = deferredPrompt || window.__pwaInstallPrompt;
+
+    if (promptEvent) {
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        if (choice.outcome === "accepted") {
+          setDeferredPrompt(null);
+          window.__pwaInstallPrompt = null;
+          setIsStandalone(true);
+        }
+      } catch (err) {
+        console.warn("Aviso ao abrir prompt de instalação:", err);
       }
     } else {
-      // Caso o navegador não tenha disparado o prompt nativo (ex: Chrome desktop), exibe as instruções
-      setShowIOSModal(true);
+      // Se ainda não foi capturado (ex: em carregamento inicial ou navegador compatível),
+      // aguardamos brevemente e tentamos novamente de forma silenciosa
+      setTimeout(async () => {
+        const retryPrompt = window.__pwaInstallPrompt;
+        if (retryPrompt) {
+          try {
+            await retryPrompt.prompt();
+          } catch (e) {
+            console.warn("Retry prompt warning:", e);
+          }
+        }
+      }, 300);
     }
   };
 
   return (
     <>
-      {/* Botão de Instalação no Header ou Barra de Ação */}
+      {/* Botão de Instalação no Header */}
       <button
         onClick={handleInstallClick}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-full shadow-sm transition-all active:scale-95 animate-pulse"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-full shadow-sm transition-all active:scale-95 cursor-pointer"
         title="Instalar Espaço Val Brombini na tela inicial"
       >
         <Download className="w-3.5 h-3.5" />
         <span>Instalar App</span>
       </button>
 
-      {/* Modal com Instruções para iOS / Navegadores Desktop */}
-      {showIOSModal && (
+      {/* Modal estritamente para iOS Safari (onde a Apple proíbe instalação automática por botão) */}
+      {showIOSModal && isIOS && (
         <div
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
           onClick={() => setShowIOSModal(false)}
@@ -92,7 +143,7 @@ export function InstallPrompt() {
                 <div className="w-9 h-9 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
                   <Smartphone className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-base text-slate-900">Instalar Espaço Val Brombini</h3>
+                <h3 className="font-bold text-base text-slate-900">Instalar no iPhone</h3>
               </div>
               <button
                 onClick={() => setShowIOSModal(false)}
@@ -103,61 +154,37 @@ export function InstallPrompt() {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Instale o aplicativo na tela inicial do seu celular para agendar com 1 toque e acessar sua agenda sem
-              precisar abrir o navegador!
+              No iPhone (Safari), siga estes 3 passos rápidos para adicionar à sua tela inicial:
             </p>
 
-            {isIOS ? (
-              /* Instruções específicas para iPhone / iPad */
-              <div className="bg-rose-50/60 p-4 rounded-2xl space-y-3 text-xs text-slate-800 border border-rose-100">
-                <p className="font-semibold text-rose-950">No seu iPhone ou iPad:</p>
-                <div className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <span>
-                    Toque no botão <strong>Compartilhar</strong> (ícone <Share className="w-3.5 h-3.5 inline mx-0.5 text-blue-600" /> na barra inferior do Safari).
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <span>
-                    Role as opções e toque em <strong>Adicionar à Tela de Início</strong> (ícone <PlusSquare className="w-3.5 h-3.5 inline mx-0.5 text-slate-700" />).
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    3
-                  </span>
-                  <span>
-                    Toque em <strong>Adicionar</strong> no canto superior direito. Pronto!
-                  </span>
-                </div>
+            <div className="bg-rose-50/60 p-4 rounded-2xl space-y-3 text-xs text-slate-800 border border-rose-100">
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                  1
+                </span>
+                <span>
+                  Toque no botão <strong>Compartilhar</strong> (ícone{" "}
+                  <Share className="w-3.5 h-3.5 inline mx-0.5 text-blue-600" /> na barra inferior do Safari).
+                </span>
               </div>
-            ) : (
-              /* Instruções gerais / Android / Chrome */
-              <div className="bg-slate-50 p-4 rounded-2xl space-y-3 text-xs text-slate-800 border border-slate-100">
-                <p className="font-semibold text-slate-900">Como adicionar:</p>
-                <div className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <span>
-                    Clique no ícone de <strong>3 pontinhos</strong> do navegador (no canto superior direito).
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <span>
-                    Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
-                  </span>
-                </div>
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                  2
+                </span>
+                <span>
+                  Role a lista e toque em <strong>Adicionar à Tela de Início</strong> (ícone{" "}
+                  <PlusSquare className="w-3.5 h-3.5 inline mx-0.5 text-slate-700" />).
+                </span>
               </div>
-            )}
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                  3
+                </span>
+                <span>
+                  Toque em <strong>Adicionar</strong> no canto superior direito. Pronto!
+                </span>
+              </div>
+            </div>
 
             <button
               onClick={() => setShowIOSModal(false)}
