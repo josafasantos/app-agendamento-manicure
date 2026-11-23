@@ -1,7 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  /* Paleta Rose Gold Oficial - Espaço Val Brombini */
+  --color-rose-50: #fdf9f9;
+  --color-rose-100: #f7ebed;
+  --color-rose-200: #edd3d7;
+  --color-rose-300: #dfb2b9;
+  --color-rose-400: #cd8d97;
+  --color-rose-500: #b76e79;
+  --color-rose-600: #9f5661;
+  --color-rose-700: #83434d;
+  --color-rose-800: #6d3a42;
+  --color-rose-900: #5b343b;
+  --color-rose-950: #351a1e;
+}
+
 @layer base {
   body {
     -webkit-tap-highlight-color: transparent;
+    background-color: #faf7f7;
   }
 }
