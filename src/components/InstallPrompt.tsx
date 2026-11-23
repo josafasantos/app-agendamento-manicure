@@ -121,11 +121,12 @@ export function InstallPrompt() {
       {/* Botão de Instalação no Header */}
       <button
         onClick={handleInstallClick}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-full shadow-sm transition-all active:scale-95 cursor-pointer"
+        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-full shadow-xs transition-all active:scale-95 cursor-pointer shrink-0"
         title="Instalar Espaço Val Brombini na tela inicial"
       >
         <Download className="w-3.5 h-3.5" />
-        <span>Instalar App</span>
+        <span className="hidden sm:inline">Instalar App</span>
+        <span className="sm:hidden">Instalar</span>
       </button>
 
       {/* Modal estritamente para iOS Safari (onde a Apple proíbe instalação automática por botão) */}

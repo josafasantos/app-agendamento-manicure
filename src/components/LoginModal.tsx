@@ -116,7 +116,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl space-y-5 border border-rose-100"
+        className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl space-y-5 border border-rose-100 max-h-[90dvh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">

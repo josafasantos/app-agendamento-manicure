@@ -337,15 +337,15 @@ export default function App() {
       {/* ============================================================ */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-rose-100 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 pr-2">
             <img
               src="/favicon.svg"
               alt={settings.studioName}
-              className="w-10 h-10 rounded-2xl shadow-rose-200 shadow-md object-contain shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl shadow-rose-200 shadow-md object-contain shrink-0"
             />
-            <div>
-              <h1 className="font-bold text-lg text-slate-900 leading-tight">{settings.studioName}</h1>
-              <p className="text-xs text-rose-600 font-medium">Por {settings.ownerName}</p>
+            <div className="min-w-0">
+              <h1 className="font-bold text-base sm:text-lg text-slate-900 leading-tight truncate">{settings.studioName}</h1>
+              <p className="text-[11px] sm:text-xs text-rose-600 font-medium truncate">Por {settings.ownerName}</p>
             </div>
           </div>
 
@@ -508,7 +508,7 @@ export default function App() {
                         Horários Livres (calculados para {totalDuration} min de atendimento)
                       </label>
                       {availableSlots.length > 0 ? (
-                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                           {availableSlots.map((time) => {
                             const isSelected = clientTime === time;
                             return (
@@ -701,10 +701,10 @@ export default function App() {
           /* ============================================================ */
           <div className="space-y-6">
             {/* Abas do Painel */}
-            <div className="flex bg-white p-1 rounded-2xl border border-rose-100 shadow-xs text-xs font-bold overflow-x-auto">
+            <div className="flex bg-white p-1.5 rounded-2xl border border-rose-100 shadow-xs text-xs font-bold overflow-x-auto gap-1 scrollbar-none">
               <button
                 onClick={() => setAdminTab("agenda")}
-                className={`flex-1 py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
+                className={`flex-1 min-w-fit py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap shrink-0 sm:shrink ${
                   adminTab === "agenda" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -714,7 +714,7 @@ export default function App() {
 
               <button
                 onClick={() => setAdminTab("clients")}
-                className={`flex-1 py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
+                className={`flex-1 min-w-fit py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap shrink-0 sm:shrink ${
                   adminTab === "clients" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -724,7 +724,7 @@ export default function App() {
 
               <button
                 onClick={() => setAdminTab("finance")}
-                className={`flex-1 py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
+                className={`flex-1 min-w-fit py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap shrink-0 sm:shrink ${
                   adminTab === "finance" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -734,7 +734,7 @@ export default function App() {
 
               <button
                 onClick={() => setAdminTab("settings")}
-                className={`flex-1 py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
+                className={`flex-1 min-w-fit py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all whitespace-nowrap shrink-0 sm:shrink ${
                   adminTab === "settings" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -747,29 +747,29 @@ export default function App() {
             {adminTab === "agenda" && (
               <div className="space-y-5">
                 {/* Métricas do Topo */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-xs">
-                    <span className="text-slate-500 text-xs">Hoje na Agenda</span>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">
-                      {appointments.filter((a) => a.date === todayStr && a.status !== "cancelled").length} clientes
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="bg-white p-2.5 sm:p-4 rounded-2xl border border-rose-100 shadow-xs">
+                    <span className="text-slate-500 text-[10px] sm:text-xs block">Hoje na Agenda</span>
+                    <p className="text-base sm:text-2xl font-bold text-slate-900 mt-0.5 sm:mt-1 truncate">
+                      {appointments.filter((a) => a.date === todayStr && a.status !== "cancelled").length} <span className="text-[11px] font-normal text-slate-500 hidden sm:inline">clientes</span>
                     </p>
-                    <p className="text-[11px] text-emerald-600 font-medium">Tempo real ativo</p>
+                    <p className="text-[9px] sm:text-[11px] text-emerald-600 font-medium truncate">Tempo real ativo</p>
                   </div>
 
-                  <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-xs">
-                    <span className="text-slate-500 text-xs">Receita Hoje</span>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">
+                  <div className="bg-white p-2.5 sm:p-4 rounded-2xl border border-rose-100 shadow-xs">
+                    <span className="text-slate-500 text-[10px] sm:text-xs block">Receita Hoje</span>
+                    <p className="text-base sm:text-2xl font-bold text-slate-900 mt-0.5 sm:mt-1 truncate">
                       {formatCurrency(financeMetrics.todayIncome)}
                     </p>
-                    <p className="text-[11px] text-slate-500">Lançado no caixa</p>
+                    <p className="text-[9px] sm:text-[11px] text-slate-500 truncate">Lançado no caixa</p>
                   </div>
 
-                  <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-xs">
-                    <span className="text-slate-500 text-xs">Alertas de Retorno</span>
-                    <p className="text-2xl font-bold text-rose-600 mt-1">
-                      {maintenanceAlertClients.length} para chamar
+                  <div className="bg-white p-2.5 sm:p-4 rounded-2xl border border-rose-100 shadow-xs">
+                    <span className="text-slate-500 text-[10px] sm:text-xs block">Alertas Retorno</span>
+                    <p className="text-base sm:text-2xl font-bold text-rose-600 mt-0.5 sm:mt-1 truncate">
+                      {maintenanceAlertClients.length} <span className="text-[11px] font-normal text-slate-500 hidden sm:inline">chamar</span>
                     </p>
-                    <p className="text-[11px] text-slate-500">Janela de 15 a 21 dias</p>
+                    <p className="text-[9px] sm:text-[11px] text-slate-500 truncate">15 a 21 dias</p>
                   </div>
                 </div>
 
@@ -846,8 +846,8 @@ export default function App() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                          <div className="text-right mr-2">
+                        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                          <div className="text-left sm:text-right mr-1">
                             {app.totalPrice > 0 && (
                               <span className="text-xs font-bold text-slate-900 block">
                                 {formatCurrency(app.totalPrice)}
@@ -874,68 +874,70 @@ export default function App() {
                             </span>
                           </div>
 
-                          {/* Ações do Card */}
-                          {app.status === "cancelled" && (
-                            <button
-                              onClick={() => updateAppointmentStatus(app.id, "confirmed")}
-                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
-                              title="Desfazer cancelamento e reativar horário"
-                            >
-                              <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
-                              Desfazer
-                            </button>
-                          )}
-
-                          {app.status === "completed" && (
-                            <button
-                              onClick={() => updateAppointmentStatus(app.id, "confirmed")}
-                              className="px-2 py-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg text-xs font-medium flex items-center gap-1 transition-all cursor-pointer"
-                              title="Reabrir agendamento"
-                            >
-                              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-                              Reabrir
-                            </button>
-                          )}
-
-                          {app.status !== "completed" && app.status !== "cancelled" && (
-                            <>
+                          <div className="flex items-center gap-1.5 ml-auto sm:ml-0 flex-wrap justify-end">
+                            {/* Ações do Card */}
+                            {app.status === "cancelled" && (
                               <button
-                                onClick={() => setActiveAppointmentForComplete(app)}
-                                className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-all shadow-xs"
-                                title="Finalizar atendimento e registrar recebimento"
+                                onClick={() => updateAppointmentStatus(app.id, "confirmed")}
+                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                                title="Desfazer cancelamento e reativar horário"
                               >
-                                Concluir
+                                <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+                                Desfazer
                               </button>
+                            )}
 
+                            {app.status === "completed" && (
                               <button
-                                onClick={() => updateAppointmentStatus(app.id, "in_progress")}
-                                className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-xs font-medium"
-                                title="Marcar como em atendimento"
+                                onClick={() => updateAppointmentStatus(app.id, "confirmed")}
+                                className="px-2 py-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg text-xs font-medium flex items-center gap-1 transition-all cursor-pointer"
+                                title="Reabrir agendamento"
                               >
-                                Atender
+                                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                                Reabrir
                               </button>
+                            )}
 
-                              <button
-                                onClick={() => updateAppointmentStatus(app.id, "cancelled")}
-                                className="px-2 py-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs font-medium"
-                                title="Cancelar horário"
+                            {app.status !== "completed" && app.status !== "cancelled" && (
+                              <>
+                                <button
+                                  onClick={() => setActiveAppointmentForComplete(app)}
+                                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-all shadow-xs"
+                                  title="Finalizar atendimento e registrar recebimento"
+                                >
+                                  Concluir
+                                </button>
+
+                                <button
+                                  onClick={() => updateAppointmentStatus(app.id, "in_progress")}
+                                  className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-xs font-medium"
+                                  title="Marcar como em atendimento"
+                                >
+                                  Atender
+                                </button>
+
+                                <button
+                                  onClick={() => updateAppointmentStatus(app.id, "cancelled")}
+                                  className="px-2 py-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs font-medium"
+                                  title="Cancelar horário"
+                                >
+                                  Cancelar
+                                </button>
+                              </>
+                            )}
+
+                            {app.clientPhone && app.clientPhone !== "00000000000" && (
+                              <a
+                                href={`https://wa.me/55${app.clientPhone}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all"
+                                title="Chamar no WhatsApp"
                               >
-                                Cancelar
-                              </button>
-                            </>
-                          )}
-
-                          {app.clientPhone && app.clientPhone !== "00000000000" && (
-                            <a
-                              href={`https://wa.me/55${app.clientPhone}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all"
-                              title="Chamar no WhatsApp"
-                            >
-                              <Phone className="w-4 h-4" />
-                            </a>
-                          )}
+                                <Phone className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))
@@ -1079,20 +1081,18 @@ export default function App() {
                 </div>
 
                 {/* Métodos de Pagamento */}
-                <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-xs flex items-center justify-around text-xs">
+                <div className="bg-white p-3 sm:p-4 rounded-2xl border border-rose-100 shadow-xs grid grid-cols-3 gap-2 text-center text-xs">
                   <div>
                     <span className="text-slate-500 block text-[10px]">Total via PIX</span>
-                    <strong className="text-slate-900 font-bold">{formatCurrency(financeMetrics.pixTotal)}</strong>
+                    <strong className="text-slate-900 font-bold text-xs sm:text-sm block truncate">{formatCurrency(financeMetrics.pixTotal)}</strong>
                   </div>
-                  <div className="h-8 w-px bg-slate-200" />
-                  <div>
-                    <span className="text-slate-500 block text-[10px]">Total via Cartão</span>
-                    <strong className="text-slate-900 font-bold">{formatCurrency(financeMetrics.cardTotal)}</strong>
+                  <div className="border-x border-slate-100 px-1">
+                    <span className="text-slate-500 block text-[10px]">Total Cartão</span>
+                    <strong className="text-slate-900 font-bold text-xs sm:text-sm block truncate">{formatCurrency(financeMetrics.cardTotal)}</strong>
                   </div>
-                  <div className="h-8 w-px bg-slate-200" />
                   <div>
-                    <span className="text-slate-500 block text-[10px]">Total em Dinheiro</span>
-                    <strong className="text-slate-900 font-bold">{formatCurrency(financeMetrics.cashTotal)}</strong>
+                    <span className="text-slate-500 block text-[10px]">Total Dinheiro</span>
+                    <strong className="text-slate-900 font-bold text-xs sm:text-sm block truncate">{formatCurrency(financeMetrics.cashTotal)}</strong>
                   </div>
                 </div>
 
