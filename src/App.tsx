@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -12,11 +12,17 @@ import {
   Plus,
   MessageSquare,
   RotateCcw,
-  Ban
+  Ban,
+  Lock,
+  LogOut,
+  ArrowLeft
 } from "lucide-react";
 import { formatCurrency, formatPhone } from "./lib/utils";
 import type { Service, Appointment, ClientProfile } from "./types";
 import { InstallPrompt } from "./components/InstallPrompt";
+import { LoginModal } from "./components/LoginModal";
+import { auth } from "./lib/firebase";
+import { onAuthStateChanged, signOut, type User as FirebaseUser } from "firebase/auth";
 
 // Dados iniciais de demonstração (serão sincronizados com o Firestore)
 const INITIAL_SERVICES: Service[] = [
@@ -138,7 +144,20 @@ const INITIAL_RETENTIONS: ClientProfile[] = [
 ];
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"client" | "admin">("client");
+
+  // Escuta alterações de autenticação do Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      if (!user && viewMode === "admin") {
+        setViewMode("client");
+      }
+    });
+    return () => unsubscribe();
+  }, [viewMode]);
 
   // Estado do fluxo da cliente
   const [selectedServices, setSelectedServices] = useState<string[]>(["serv-2"]);
@@ -192,30 +211,53 @@ export default function App() {
             </div>
           </div>
 
-          {/* Botão de Instalar PWA & Seletor de Modo */}
+          {/* Ações do Topo: Instalação e Acesso Restrito da Manicure */}
           <div className="flex items-center gap-2">
             <InstallPrompt />
-            <div className="flex bg-rose-100/60 p-1 rounded-full text-xs font-semibold">
+
+            {!currentUser ? (
+              /* Manicure não autenticada: botão discreto com cadeado */
               <button
-                onClick={() => {
-                  setViewMode("client");
-                  setBookingConfirmed(false);
-                }}
-                className={`px-3 py-1.5 rounded-full transition-all ${
-                  viewMode === "client" ? "bg-white text-rose-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
+                onClick={() => setIsLoginModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 rounded-full text-xs font-semibold border border-slate-200 hover:border-rose-200 transition-all shadow-xs"
+                title="Área exclusiva da manicure"
               >
-                Visão Cliente
+                <Lock className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Área da Manicure</span>
               </button>
-              <button
-                onClick={() => setViewMode("admin")}
-                className={`px-3 py-1.5 rounded-full transition-all ${
-                  viewMode === "admin" ? "bg-rose-500 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Painel Manicure
-              </button>
-            </div>
+            ) : (
+              /* Manicure autenticada */
+              <div className="flex items-center gap-1.5">
+                {viewMode === "client" ? (
+                  <button
+                    onClick={() => setViewMode("admin")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-bold shadow-xs transition-all"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Meu Painel</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setViewMode("client")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full text-xs font-semibold transition-all"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Ver Agendamento</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={async () => {
+                    await signOut(auth);
+                    setViewMode("client");
+                  }}
+                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all"
+                  title="Sair do painel"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -430,9 +472,36 @@ export default function App() {
               </div>
             )}
           </div>
+        ) : !currentUser ? (
+          /* ============================================================ */
+          /* TRAVA DE SEGURANÇA: NÃO AUTENTICADA                         */
+          /* ============================================================ */
+          <div className="bg-white rounded-3xl p-8 border border-rose-100 shadow-sm text-center max-w-md mx-auto space-y-4 mt-8">
+            <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">Acesso Restrito</h2>
+            <p className="text-xs text-slate-600">
+              O Painel de Gestão e a agenda do estúdio são de acesso exclusivo da manicure autenticada.
+            </p>
+            <div className="pt-2 space-y-2">
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl text-xs shadow-md shadow-rose-200 transition-all"
+              >
+                Fazer Login da Manicure
+              </button>
+              <button
+                onClick={() => setViewMode("client")}
+                className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition-all"
+              >
+                Voltar para Agendamentos
+              </button>
+            </div>
+          </div>
         ) : (
           /* ============================================================ */
-          /* MÓDULO 2: PAINEL DE GESTÃO DA MANICURE (ADMIN)               */
+          /* MÓDULO 2: PAINEL DE GESTÃO DA MANICURE (ADMIN AUTENTICADO)   */
           /* ============================================================ */
           <div className="space-y-6">
             {/* Cards de Métricas do Dia */}
@@ -587,6 +656,26 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Modal de Login Protegido da Manicure */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={() => setViewMode("admin")}
+      />
+
+      {/* Rodapé com link discreto para login */}
+      <footer className="mt-12 text-center text-xs text-slate-400">
+        <p>© Studio Nails • Agendamento Online</p>
+        {!currentUser && (
+          <button
+            onClick={() => setIsLoginModalOpen(true)}
+            className="mt-1 text-slate-400 hover:text-rose-600 transition-colors underline text-[11px]"
+          >
+            Acesso da Manicure
+          </button>
+        )}
+      </footer>
     </div>
   );
 }
