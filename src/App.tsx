@@ -114,19 +114,32 @@ export default function App() {
     });
 
     const unsubSettings = subscribeSettings(setSettings);
-    const unsubClients = subscribeClients(setClients);
-    const unsubTransactions = subscribeTransactions(setTransactions);
     const unsubAppointments = subscribeAppointments(null, setAppointments);
 
     return () => {
       unsubAuth();
       unsubServices();
       unsubSettings();
-      unsubClients();
-      unsubTransactions();
       unsubAppointments();
     };
   }, [viewMode]);
+
+  // 1.1 Assinaturas de Coleções Privadas (apenas para a manicure autenticada)
+  useEffect(() => {
+    if (!currentUser) {
+      setClients([]);
+      setTransactions([]);
+      return;
+    }
+
+    const unsubClients = subscribeClients(setClients);
+    const unsubTransactions = subscribeTransactions(setTransactions);
+
+    return () => {
+      unsubClients();
+      unsubTransactions();
+    };
+  }, [currentUser]);
 
   // Cálculos do serviço selecionado pela cliente
   const activeSelectedServices = useMemo(() => {
@@ -172,7 +185,26 @@ export default function App() {
   // Submissão do Agendamento pela Cliente
   const handleClientBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !clientPhone || !clientTime) return;
+    if (!clientName.trim()) {
+      setBookingError("Por favor, informe seu nome.");
+      return;
+    }
+
+    const cleanedPhone = clientPhone.replace(/\D/g, "");
+    if (cleanedPhone.length < 10 || cleanedPhone.length > 11) {
+      setBookingError("Por favor, informe um WhatsApp válido com DDD (ex: 11 99999-9999).");
+      return;
+    }
+
+    if (activeSelectedServices.length === 0) {
+      setBookingError("Por favor, selecione pelo menos um procedimento antes de continuar.");
+      return;
+    }
+
+    if (!clientTime) {
+      setBookingError("Por favor, selecione um horário disponível.");
+      return;
+    }
 
     setIsBookingLoading(true);
     setBookingError("");
@@ -186,8 +218,8 @@ export default function App() {
       const servicesText = activeSelectedServices.map((s) => s.title).join(" + ");
 
       await createAppointment({
-        clientName,
-        clientPhone,
+        clientName: clientName.trim(),
+        clientPhone: cleanedPhone,
         serviceId: activeSelectedServices.map((s) => s.id).join(","),
         serviceTitle: servicesText,
         totalPrice,
@@ -195,7 +227,7 @@ export default function App() {
         date: clientDate,
         startTime: clientTime,
         endTime: `${endHStr}:${endMStr}`,
-        notes: clientNotes
+        notes: clientNotes.trim()
       });
 
       setLastBookedAppointment({
