@@ -1,53 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
+    <!-- Fundo Luxo Rose/Rubi -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#881337" />
-      <stop offset="45%" stop-color="#e11d48" />
+      <stop offset="50%" stop-color="#be123c" />
       <stop offset="100%" stop-color="#fb7185" />
     </linearGradient>
-    <linearGradient id="nailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" />
-      <stop offset="70%" stop-color="#fff1f2" />
-      <stop offset="100%" stop-color="#fecdd3" />
-    </linearGradient>
+
+    <!-- Ouro Champanhe Metálico -->
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a" />
-      <stop offset="50%" stop-color="#fbbf24" />
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#fef08a" />
+      <stop offset="60%" stop-color="#fbbf24" />
       <stop offset="100%" stop-color="#d97706" />
     </linearGradient>
+
+    <!-- Ouro Suave para Borda -->
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Sombra Suave -->
     <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4c0519" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4c0519" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#78350f" flood-opacity="0.4"/>
     </filter>
   </defs>
 
-  <!-- Fundo Squircle Elegante -->
+  <!-- Fundo Squircle -->
   <rect x="24" y="24" width="464" height="464" rx="124" fill="url(#bgGrad)" filter="url(#shadow)" />
 
-  <!-- Borda Interna Suave -->
-  <rect x="36" y="36" width="440" height="440" rx="112" stroke="#ffffff" stroke-opacity="0.18" stroke-width="3" fill="none" />
+  <!-- Moldura Dourada Fina -->
+  <rect x="42" y="42" width="428" height="428" rx="106" stroke="url(#goldBorder)" stroke-width="2.5" fill="none" />
 
-  <!-- Silhueta Esculpida da Unha (Formato Amendoador / Stiletto Clássico) -->
-  <path d="M256 85 C295 135, 335 210, 335 285 C335 348, 302 380, 256 380 C210 380, 177 348, 177 285 C177 210, 217 135, 256 85 Z" fill="url(#nailGrad)" />
+  <!-- Círculo de Brilho de Fundo -->
+  <circle cx="256" cy="240" r="140" fill="#ffffff" fill-opacity="0.04" />
 
-  <!-- Ponta Francesa Esculpida com Brilho Puro -->
-  <path d="M256 85 C276 120, 305 175, 312 215 C290 230, 222 230, 200 215 C207 175, 236 120, 256 85 Z" fill="#ffffff" fill-opacity="0.9" />
+  <!-- Monograma Central VB em Arte Vetorial de Alta Costura -->
+  <g filter="url(#goldGlow)">
+    <!-- Letra V estilizada com serifa de luxo e contraste de traço -->
+    <path d="M 145 140 L 195 140 C 190 152 185 165 185 178 L 222 288 L 265 178 C 265 165 260 152 255 140 L 295 140 C 290 152 282 165 275 182 L 232 300 C 228 310 220 316 210 316 C 200 316 193 310 189 300 L 140 178 C 135 165 138 152 145 140 Z" fill="url(#goldGrad)" />
 
-  <!-- Reflexo de Verniz / Top Coat Glass -->
-  <path d="M225 160 C217 205, 214 250, 216 295 C210 285, 208 250, 211 210 C214 180, 220 160, 225 160 Z" fill="#ffffff" fill-opacity="0.6" />
+    <!-- Letra B entrelaçada e imponente -->
+    <path d="M 270 140 L 340 140 C 375 140 398 158 398 188 C 398 210 382 225 362 232 C 388 238 406 256 406 284 C 406 316 378 335 338 335 L 260 335 C 255 335 250 330 250 325 L 250 315 C 255 315 262 312 265 305 L 265 170 C 262 163 255 160 250 160 L 250 150 C 250 145 255 140 270 140 Z M 295 165 L 295 220 L 332 220 C 352 220 366 210 366 192 C 366 175 352 165 332 165 Z M 295 242 L 295 310 L 335 310 C 358 310 374 298 374 276 C 374 254 358 242 335 242 Z" fill="url(#goldGrad)" />
+  </g>
 
-  <!-- Estrela de Brilho Dourado / Glamour (Canto Superior Direito) -->
-  <path d="M375 115 Q375 145 405 145 Q375 145 375 175 Q375 145 345 145 Q375 145 375 115 Z" fill="url(#goldGrad)" />
-  <circle cx="375" cy="145" r="4.5" fill="#ffffff" />
+  <!-- Estrela de Diamante Brilhante no Topo -->
+  <path d="M 380 120 Q 380 142 402 142 Q 380 142 380 164 Q 380 142 358 142 Q 380 142 380 120 Z" fill="url(#goldGrad)" />
+  <circle cx="380" cy="142" r="3.5" fill="#ffffff" />
 
-  <!-- Estrela de Brilho Suave (Canto Inferior Esquerdo) -->
-  <path d="M145 305 Q145 324 164 324 Q145 324 145 343 Q145 324 126 324 Q145 324 145 305 Z" fill="#ffffff" fill-opacity="0.85" />
+  <!-- Estrela Pequena de Brilho no Canto Inferior -->
+  <path d="M 135 295 Q 135 310 150 310 Q 135 310 135 325 Q 135 310 120 310 Q 135 310 135 295 Z" fill="#ffffff" fill-opacity="0.9" />
 
-  <!-- Detalhes de Cristais / Glitter -->
-  <circle cx="160" cy="165" r="6" fill="url(#goldGrad)" />
-  <circle cx="355" cy="335" r="5" fill="#ffffff" fill-opacity="0.8" />
-  <circle cx="370" cy="240" r="3.5" fill="url(#goldGrad)" />
-
-  <!-- Monograma Sofisticado: VAL BROMBINI -->
-  <text x="256" y="428" text-anchor="middle" font-family="'Playfair Display', 'Cinzel', 'Georgia', 'Segoe UI', serif" font-size="28" font-weight="700" letter-spacing="6" fill="#ffffff" fill-opacity="0.95">VAL BROMBINI</text>
-  <text x="256" y="446" text-anchor="middle" font-family="'Segoe UI', -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4" fill="#fecdd3" fill-opacity="0.85">NAIL DESIGNER</text>
+  <!-- Tipografia de Assinatura -->
+  <text x="256" y="392" text-anchor="middle" font-family="'Cinzel', 'Playfair Display', 'Georgia', serif" font-size="28" font-weight="700" letter-spacing="8" fill="#ffffff" fill-opacity="0.95">VAL BROMBINI</text>
+  <text x="256" y="418" text-anchor="middle" font-family="'Segoe UI', -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="5" fill="#fecdd3" fill-opacity="0.9">ESPAÇO DE BELEZA</text>
 </svg>
